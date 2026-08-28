@@ -1,7 +1,7 @@
 # ComboForge Bridge
 
 Reads your controller and streams the presses to [ComboForge](https://comboforge.gg)
-pages running on **your own machine** — so combo capture and the input overlay keep
+pages running on **your own machine** so combo capture and the input overlay keep
 working while your game has focus.
 
 It has to exist because of a browser limitation: since Chrome 117, Windows only
@@ -27,16 +27,16 @@ It never:   makes an outbound network connection of any kind.
             writes to the registry.
 ```
 
-**Keyboard and mouse support is a non-goal, permanently.** Not "not yet" — never.
+**Keyboard and mouse support is a non-goal, permanently.** Not "not yet" just never.
 A program that reads your keyboard is a keylogger with a nice README, and no
 amount of open source makes that a comfortable thing to run. Controllers only.
 
 **This program never checks for updates, and it never will.** An updater is an
 outbound connection, a download, and code that replaces the binary you audited
-with one you didn't. The ComboForge page tells you when a new version exists —
+with one you didn't. The ComboForge page tells you when a new version exists
 the page is already talking to the internet, and this program shouldn't be.
 
-These claims are **tested, not asserted**: the CI "trust invariants" job fails
+These claims are **tested**: the CI "trust invariants" job fails (and auditable in this repo)
 the build if outbound-connection code appears anywhere in the tree, or if
 `unsafe` appears outside the one file documented below. Found a claim in this
 README that is not true of the code? **That is a security report** — see
@@ -44,7 +44,7 @@ README that is not true of the code? **That is a security report** — see
 
 ## Verify all of that yourself (60 seconds)
 
-See [docs/VERIFY.md](docs/VERIFY.md) — copy-paste PowerShell that shows the one
+See [docs/VERIFY.md](docs/VERIFY.md) just copy-paste PowerShell that shows the one
 loopback socket, invites you to firewall the program's outbound traffic
 permanently (nothing changes, because it never dials), and checks that the exe
 you downloaded was built by public CI from this exact source:
@@ -87,7 +87,7 @@ app test against the same golden fixtures.
    starts at zero reputation. If that makes you uncomfortable: good instinct.
    Verify the file first.
 3. On the ComboForge Stream Capture page, paste the pairing token when asked.
-   Chrome may show a "local network" permission prompt — that is the browser
+   Chrome may show a "local network" permission prompt, this is the browser
    asking whether this page may talk to programs on your machine; allow it.
 4. Play. The console window shows connected clients live; close it to stop.
 
@@ -102,20 +102,20 @@ cargo build --release
 ```
 
 `rust-toolchain.toml` pins the toolchain; `Cargo.lock` is committed. See
-[docs/BUILD.md](docs/BUILD.md) — including an honest note on why we ship
+[docs/BUILD.md](docs/BUILD.md) — why we ship
 provenance attestation instead of claiming bit-for-bit reproducibility.
 
 On macOS/Linux the binary builds and runs with `--mock` (a scripted pad, used
 by the tests) but cannot read real controllers — the browser limitation this
-exists to fix is Windows-specific, and a cross-platform build would be surface
+exists to fix is **Windows-specific**, and a cross-platform build would be surface
 with no beneficiary.
 
 ## Threat model
 
-[docs/THREAT-MODEL.md](docs/THREAT-MODEL.md) — including the honest entries:
+[docs/THREAT-MODEL.md](docs/THREAT-MODEL.md) — including the entries:
 a same-user process gains nothing from this program it couldn't get by calling
 XInput itself, and a compromised ComboForge page would legitimately hold your
-pairing token. Read it before trusting us; that's what it's for.
+pairing token locally. Read it before trusting us; that's what it's for.
 
 ## License
 

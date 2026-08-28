@@ -48,6 +48,8 @@ pub fn run(
 
         let mut pad = PadSnapshot::empty();
         pad.t_us = t_us;
+        // Indexing four parallel arrays by slot; an iterator would obscure it.
+        #[allow(clippy::needless_range_loop)]
         for slot in 0..MAX_DEVICES {
             if !connected[slot] && !rescan {
                 continue; // keep the previous (disconnected) state
@@ -85,6 +87,7 @@ pub fn run(
             }
         }
         // Slots we skipped this tick keep their previous state.
+        #[allow(clippy::needless_range_loop)]
         for slot in 0..MAX_DEVICES {
             if !connected[slot] && !rescan {
                 pad.devices[slot] = prev.devices[slot].clone();

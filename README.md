@@ -11,7 +11,26 @@ tab goes deaf the moment you click into your game. The switch that used to fix i
 was removed in Chrome 148. This program reads the controller the way games do
 (XInput, which answers any process) and hands it to the page over a local socket.
 
-## What this program can see, and where it goes
+## In plain terms
+
+This little program does exactly one thing: it listens to your game
+controller and tells the ComboForge page on your screen which buttons you
+are pressing. That's the whole job.
+
+- **It only talks to ComboForge, and only on your own computer.** Nothing
+  ever goes out to the internet. Ever. Not stats, not updates, not crash
+  reports -- nothing.
+- **It cannot see your keyboard, your mouse, your screen, your files, or
+  your passwords.** It doesn't have the code to do any of that, and it never
+  will.
+- **Closing its window turns it off completely.** There is no background
+  service and nothing left running.
+- **You don't have to take our word for any of this.** The entire program is
+  public code that anyone can read, and everything below shows how to check
+  each claim yourself -- or ask any programmer you trust to look; it's
+  short on purpose.
+
+## What this program can see, and where it goes (the precise version)
 
 ```
 It reads:   your Xbox-compatible controller, via XInput. That's it.

@@ -2,7 +2,7 @@
 
 Each release notes which protocol version it speaks.
 
-## Unreleased (0.1.0) — protocol v1.0
+## v0.1.0 — 2026-08-28 — protocol v1.0
 
 - XInput poller (Windows), Standard-Gamepad normalization, trigger hysteresis,
   1/512 axis quantisation, per-connection sequence numbers.

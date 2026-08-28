@@ -22,11 +22,18 @@ pub fn banner(config: &Config, poll_hz: u32, mock: bool) {
         config.token
     );
     println!("  Config      {}", config_path().display());
-    if !config.extra_origins.is_empty() {
-        println!(
-            "  EXTRA ORIGINS from config (review these!): {:?}",
-            config.extra_origins
-        );
+    // Always printed, so "my edit did not load" is visible at a glance
+    // rather than deducible from an absence.
+    if config.extra_origins.is_empty() {
+        println!("  Extra origins  none (production origins only)");
+    } else {
+        println!("  EXTRA ORIGINS from config (review these!):");
+        for origin in &config.extra_origins {
+            println!(
+                "    + {}",
+                crate::server::handshake::normalize_origin(origin)
+            );
+        }
     }
     println!();
     println!("  This program never connects to the internet. Verify it yourself:");

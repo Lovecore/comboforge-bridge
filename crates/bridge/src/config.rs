@@ -38,10 +38,21 @@ pub fn config_path() -> PathBuf {
 pub fn load_or_create() -> Config {
     let path = config_path();
     if let Ok(raw) = fs::read_to_string(&path) {
-        if let Ok(config) = serde_json::from_str::<Config>(&raw) {
-            return config;
+        match serde_json::from_str::<Config>(&raw) {
+            Ok(config) => return config,
+            Err(error) => {
+                // NEVER silently regenerate: that would wipe a hand-edit AND
+                // rotate the pairing token, turning one JSON typo into two
+                // mysteries. Fail loudly, leave the file exactly as it is.
+                eprintln!();
+                eprintln!("  Your config file has a JSON error and was NOT loaded:");
+                eprintln!("    {}", path.display());
+                eprintln!("    {error}");
+                eprintln!("  Fix the JSON (or delete the file to start fresh), then run again.");
+                eprintln!();
+                std::process::exit(1);
+            }
         }
-        eprintln!("config at {} was unreadable; regenerating", path.display());
     }
     let config = Config {
         token: crate::token::generate(),

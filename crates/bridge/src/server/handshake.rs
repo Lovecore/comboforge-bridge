@@ -15,13 +15,23 @@ pub const BUILTIN_ORIGINS: [&str; 4] = [
     "http://127.0.0.1:5173",
 ];
 
+/// Hand-typed config entries carry hand-typed mistakes -- a trailing slash,
+/// an uppercase host, stray whitespace -- and an Origin header never has any
+/// of those. Normalizing BOTH sides forgives the paste without widening the
+/// gate: `https://evil.example` does not become allowed by lowercasing it.
+pub fn normalize_origin(origin: &str) -> String {
+    origin.trim().trim_end_matches('/').to_ascii_lowercase()
+}
+
 /// A browser always sends Origin and page JS cannot forge it. A native
 /// client can forge anything -- which is fine and the threat model says so:
 /// a native process on your machine could simply read XInput itself, so
 /// this gate is aimed at WEB PAGES, the only attacker it can and must stop.
 pub fn origin_allowed(origin: Option<&str>, extra: &[String]) -> bool {
     let Some(origin) = origin else { return false };
-    BUILTIN_ORIGINS.contains(&origin) || extra.iter().any(|o| o == origin)
+    let origin = normalize_origin(origin);
+    BUILTIN_ORIGINS.iter().any(|o| *o == origin)
+        || extra.iter().any(|o| normalize_origin(o) == origin)
 }
 
 #[derive(Debug, PartialEq)]
@@ -72,6 +82,25 @@ mod tests {
     use super::*;
 
     const AUTH_OK: &str = r#"{"type":"auth","token":"GOOD","protocol":{"major":1,"minorMin":0,"minorMax":0},"client":"test"}"#;
+
+    #[test]
+    fn hand_typed_extra_origins_are_forgiven_their_formatting() {
+        // The exact traps from the first real field test: trailing slash,
+        // stray whitespace, and case -- none of which an Origin header has.
+        let extra = vec![
+            "https://comboforge-git-branch-team.vercel.app/".to_string(),
+            "  https://Staging.Example  ".to_string(),
+        ];
+        assert!(origin_allowed(
+            Some("https://comboforge-git-branch-team.vercel.app"),
+            &extra
+        ));
+        assert!(origin_allowed(Some("https://staging.example"), &extra));
+        assert!(!origin_allowed(
+            Some("https://comboforge-git-OTHER-team.vercel.app"),
+            &extra
+        ));
+    }
 
     #[test]
     fn origin_acceptance_matrix() {

@@ -42,10 +42,16 @@ pub async fn serve(
             origin = header;
             Ok(resp)
         } else {
-            println!(
-                "  connection from {} -- ORIGIN REJECTED (403)",
-                header.as_deref().unwrap_or("(no Origin)")
-            );
+            let shown = header.as_deref().unwrap_or("(no Origin)");
+            println!("  connection from {shown} -- ORIGIN REJECTED (403)");
+            // Default-deny is the security model; a preview/staging deploy of
+            // ComboForge is the one legitimate caller that lands here, so the
+            // rejection teaches the fix instead of just refusing.
+            if shown.contains("vercel.app") || shown.contains("comboforge") {
+                println!(
+                    "    to allow it: add \"{shown}\" to \"extraOrigins\" in your config.json and restart"
+                );
+            }
             let mut response = ErrorResponse::new(Some("origin not allowed".into()));
             *response.status_mut() = tokio_tungstenite::tungstenite::http::StatusCode::FORBIDDEN;
             Err(response)

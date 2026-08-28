@@ -2,6 +2,17 @@
 
 Each release notes which protocol version it speaks.
 
+## v0.1.3 — 2026-08-28 — protocol v1.0
+
+- A UTF-8 BOM at the start of config.json (what Windows editors prepend on
+  save) is now tolerated -- it was rejecting the whole file, which v0.1.0
+  answered by silently wiping the edit and v0.1.2 by an exit whose console
+  window closed before the error could be read.
+- Fatal startup errors (config JSON error, no port available) now wait for
+  Enter before closing, so a double-clicked exe can never vanish with its
+  explanation.
+- The config error names the common causes (trailing comma, missing comma).
+
 ## v0.1.2 — 2026-08-28 — protocol v1.0
 
 - The banner always states the extra-origins list, including "none", and

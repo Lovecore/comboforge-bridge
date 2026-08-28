@@ -52,6 +52,9 @@ pub async fn run(
     }
     let Some(listener) = listener else {
         eprintln!("no port available out of {PORTS:?}; is another bridge already running?");
+        eprintln!("Press Enter to close this window.");
+        let mut line = String::new();
+        let _ = std::io::stdin().read_line(&mut line);
         std::process::exit(1);
     };
 

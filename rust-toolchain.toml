@@ -2,3 +2,4 @@
 # binary users download is traceable to a toolchain anyone can install.
 [toolchain]
 channel = "1.88.0"
+components = ["rustfmt", "clippy"]

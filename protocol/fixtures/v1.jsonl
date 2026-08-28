@@ -1,0 +1,17 @@
+# ComboForge Bridge protocol v1 golden fixtures.
+# One JSON message per line, byte-exact. BOTH repositories test against this
+# file: crates/protocol/tests/golden.rs here, and the vendored copy in the
+# ComboForge monorepo (with this file's source commit noted in its header).
+# Never hand-edit a line without bumping both sides in the same change.
+{"type":"hello","protocol":{"major":1,"minor":0},"helper":{"name":"comboforge-bridge","version":"0.1.0"},"clock":{"tUs":41823991,"wallMs":1787923004123,"pollHz":500},"devices":[{"device":0,"id":"XInput Slot 0","mapping":"standard","buttons":17,"axes":4,"connected":true}],"state":[{"device":0,"buttons":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"axes":[0.0,0.0,0.0,0.0]}]}
+{"type":"hello","protocol":{"major":1,"minor":0},"helper":{"name":"comboforge-bridge","version":"0.1.0"},"clock":{"tUs":12,"wallMs":1787923004123,"pollHz":250},"devices":[],"state":[]}
+{"type":"buttonDown","seq":1,"t":41824773,"device":0,"index":2}
+{"type":"buttonUp","seq":2,"t":41824990,"device":0,"index":2}
+{"type":"buttonDown","seq":3,"t":41825000,"device":3,"index":15}
+{"type":"buttonValue","seq":4,"t":41826019,"device":0,"index":7,"value":0.423828125}
+{"type":"axis","seq":5,"t":41826019,"device":0,"index":0,"value":-0.984375}
+{"type":"axis","seq":6,"t":41826020,"device":0,"index":1,"value":1.0}
+{"type":"heartbeat","seq":7,"t":41830000,"clients":1,"state":[{"device":0,"buttons":[true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"axes":[0.0,0.0,-0.5,0.998046875]}]}
+{"type":"heartbeat","seq":4294967295,"t":18446744073709551615,"clients":0,"state":[]}
+{"type":"error","code":"badToken","message":"Pairing token did not match"}
+{"type":"__future_test__","seq":9,"note":"the ComboForge page must skip this line without throwing; this repo's golden test skips it by design"}

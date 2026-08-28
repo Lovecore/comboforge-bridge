@@ -1,0 +1,4 @@
+# Pinned exactly: the release workflow builds with this toolchain, so the
+# binary users download is traceable to a toolchain anyone can install.
+[toolchain]
+channel = "1.88.0"

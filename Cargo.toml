@@ -1,0 +1,12 @@
+[workspace]
+members = ["crates/protocol", "crates/bridge"]
+resolver = "2"
+
+# Small and strippable: the binary a stranger is asked to run should be as
+# close to "read it all" as a compiled artifact can be.
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

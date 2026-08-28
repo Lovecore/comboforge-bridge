@@ -1,0 +1,32 @@
+[package]
+name = "comboforge-bridge"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+description = "Reads your controller via XInput and streams it to ComboForge pages on your own machine. Loopback-only; zero outbound connections."
+
+[dependencies]
+comboforge-bridge-protocol = { path = "../protocol" }
+# default-features = false everywhere it matters: this binary carries NO TLS
+# implementation, so it is structurally incapable of speaking to the
+# internet even by accident. `cargo tree` proves it.
+tokio = { version = "1", default-features = false, features = ["rt-multi-thread", "net", "sync", "time", "macros", "io-util"] }
+tokio-tungstenite = { version = "0.23", default-features = false, features = ["handshake"] }
+futures-util = { version = "0.3", default-features = false, features = ["sink", "std"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+getrandom = "0.2"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.59", features = [
+  "Win32_Foundation",
+  "Win32_UI_Input_XboxController",
+] }
+
+[dev-dependencies]
+tokio = { version = "1", default-features = false, features = ["rt-multi-thread", "macros", "time", "net"] }
+# The `connect` feature exists ONLY for tests (a client to talk to ourselves).
+# Dev-dependencies never reach the release binary, so the no-TLS/no-client
+# claim about the shipped exe still holds -- and even here, no TLS feature is
+# enabled, so this test client can only ever speak plain ws://.
+tokio-tungstenite = { version = "0.23", default-features = false, features = ["connect", "handshake"] }

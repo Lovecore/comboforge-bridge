@@ -1,0 +1,55 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - run: rustup show
+      - run: cargo fmt --check
+      - run: cargo clippy --all-targets --locked -- -D warnings
+      - run: cargo test --locked
+
+  # The README's claims about this program, enforced. If this job fails, the
+  # documentation has become a lie and the build deserves to break.
+  trust-invariants:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - name: No outbound-connection code anywhere in the tree
+        run: |
+          ! grep -rnE "TcpStream::connect|reqwest|ureq|hyper::Client|to_socket_addrs|lookup_host" crates/ --include=*.rs
+      - name: unsafe code exists only in input/xinput.rs
+        # Matches unsafe BLOCKS/fns/impls -- not the forbid(unsafe_code)
+        # attributes or prose that mention the word.
+        run: |
+          test "$(grep -rlE 'unsafe (fn|impl|trait)|unsafe \{' crates/ --include='*.rs' | grep -v 'input/xinput.rs' | wc -l)" -eq 0
+      - name: No TLS stack in the dependency tree
+        run: |
+          rustup show
+          ! cargo tree --locked | grep -E "rustls|native-tls|openssl"
+      - name: Dependency budget
+        run: |
+          N=$(cargo tree --edges normal --prefix none --locked | sort -u | wc -l)
+          CAP=$(grep -oP 'DEPENDENCY_CAP=\K\d+' docs/DEPENDENCIES.md)
+          echo "dependency tree: $N crates (cap $CAP)"
+          if [ "$N" -gt "$CAP" ]; then
+            echo "::error::dependency tree grew to $N crates, over the cap of $CAP. Raising the cap is a deliberate act: edit docs/DEPENDENCIES.md in the same change."
+            exit 1
+          fi
+
+  deny:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: EmbarkStudios/cargo-deny-action@30f817c6f72275c6d54dc744fbca09ebc958599f # v2.0.12

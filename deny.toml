@@ -1,0 +1,22 @@
+[licenses]
+allow = ["MIT", "Apache-2.0", "Apache-2.0 WITH LLVM-exception", "BSD-2-Clause", "BSD-3-Clause", "ISC", "Unicode-3.0", "Zlib"]
+
+[bans]
+multiple-versions = "warn"
+# The trust invariants in prose, as machine policy: nothing that dials out.
+deny = [
+  { name = "reqwest" },
+  { name = "ureq" },
+  { name = "hyper" },
+  { name = "native-tls" },
+  { name = "rustls" },
+  { name = "openssl" },
+  { name = "openssl-sys" },
+]
+
+[advisories]
+yanked = "deny"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"

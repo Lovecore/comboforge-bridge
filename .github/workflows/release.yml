@@ -1,0 +1,50 @@
+name: release
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    env:
+      # rustc 1.69+ passes /Brepro to link.exe: zeroed PE timestamp.
+      SOURCE_DATE_EPOCH: "1"
+      RUSTFLAGS: "--remap-path-prefix=${{ github.workspace }}=/build"
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - run: rustup show
+      - run: cargo build --release --locked
+      - name: Hash into the public log
+        run: Get-FileHash target/release/comboforge-bridge.exe -Algorithm SHA256
+
+      # --- code signing (SignPath Foundation) ---
+      # Slots in here once the SignPath OSS application is approved: upload
+      # the unsigned artifact, submit the signing request, download signed/.
+      # Until then releases ship unsigned-but-attested, and the README says
+      # exactly what the SmartScreen dialog means.
+      # IMPORTANT when enabling: the attestation step below must then point
+      # at the SIGNED file -- signing mutates the binary, and attesting the
+      # pre-signing digest would make verification fail on the file users
+      # actually download.
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3.0.0
+        with:
+          subject-path: target/release/comboforge-bridge.exe
+
+      - name: Stage release assets
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item target/release/comboforge-bridge.exe dist/
+          Copy-Item protocol/fixtures/v1.jsonl dist/protocol-fixtures-v1.jsonl
+          Get-FileHash dist/* -Algorithm SHA256 | Format-List
+
+      - name: Create release
+        run: gh release create $env:GITHUB_REF_NAME dist/comboforge-bridge.exe dist/protocol-fixtures-v1.jsonl --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}

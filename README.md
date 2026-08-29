@@ -11,6 +11,13 @@ tab goes deaf the moment you click into your game. The switch that used to fix i
 was removed in Chrome 148. This program reads the controller the way games do
 (XInput, which answers any process) and hands it to the page over a local socket.
 
+## Do you even need this?
+
+Only if you capture in a Chromium browser (Chrome, Edge, Brave) on Windows.
+**If you use Firefox, you do not need this program at all** -- Firefox still
+delivers controller input while your game has focus, so the ComboForge page
+works there on its own. The Bridge exists because Chrome stopped.
+
 ## In plain terms
 
 This little program does exactly one thing: it listens to your game

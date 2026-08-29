@@ -66,8 +66,9 @@ pub fn load_or_create() -> Config {
                 eprintln!("  Your config file has a JSON error and was NOT loaded:");
                 eprintln!("    {}", path.display());
                 eprintln!("    {error}");
-                eprintln!("  Common causes: a trailing comma after the last entry, or a missing");
-                eprintln!("  comma between the token line and extraOrigins.");
+                eprintln!("  Common causes: a URL in extraOrigins missing its quotation marks,");
+                eprintln!("  a trailing comma after the last entry, or a missing comma between");
+                eprintln!("  the token line and extraOrigins. Every value needs \"quotes\".");
                 eprintln!("  Fix the JSON (or delete the file to start fresh), then run again.");
                 eprintln!();
                 pause_before_exit();

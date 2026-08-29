@@ -114,6 +114,31 @@ To start it with Windows, drop a shortcut in `shell:startup` (Win+R, type
 `shell:startup`). The program deliberately does not offer to do this itself in
 v1 — it writes no registry keys at all.
 
+## Troubleshooting
+
+- **"Your config file has a JSON error"** -- the window names the file, line
+  and column. The three typos that account for nearly all of these: a URL in
+  `extraOrigins` missing its quotation marks (every value needs `"quotes"`),
+  a trailing comma after the last entry, or a missing comma between the
+  token line and `extraOrigins`. A working example:
+
+  ```json
+  {
+    "token": "AAAA-BBBB-CCCC-DDDD-EEEE",
+    "extraOrigins": ["https://your-preview.vercel.app"]
+  }
+  ```
+
+- **"ORIGIN REJECTED" in the log** -- the page connecting is not on the
+  allowlist. Production ComboForge always is; a preview/staging deploy needs
+  its origin added to `extraOrigins` (restart afterwards -- the banner lists
+  what loaded).
+- **The ComboForge page says the Bridge is not running, but it is** -- your
+  browser may have blocked the page's "local network" permission. Click the
+  icon left of the address bar and allow it. The Bridge's own client count
+  is the tiebreaker: if it says 0 while the page tries to connect, the
+  browser is blocking; if it counts up, the page is connected.
+
 ## Building from source
 
 ```
